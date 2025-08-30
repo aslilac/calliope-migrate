@@ -9,17 +9,17 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/hashicorp/go-multierror"
 	_ "github.com/mattn/go-sqlite3"
+	"lilac.ooo/migrate"
+	"lilac.ooo/migrate/database"
 )
 
 func init() {
 	database.Register("sqlite3", &Sqlite{})
 }
 
-var DefaultMigrationsTable = "schema_migrations"
+var DefaultMigrationsTable = "_calliope"
 var (
 	ErrDatabaseDirty  = fmt.Errorf("database is dirty")
 	ErrNilConfig      = fmt.Errorf("no config")

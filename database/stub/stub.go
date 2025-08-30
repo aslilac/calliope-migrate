@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"sync/atomic"
 
-	"github.com/golang-migrate/migrate/v4/database"
+	"lilac.ooo/migrate/database"
 )
 
 func init() {

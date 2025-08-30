@@ -9,9 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/stub" // TODO remove again
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"lilac.ooo/migrate"
+	_ "lilac.ooo/migrate/source/file"
 )
 
 var (
@@ -72,7 +71,7 @@ func timeVersion(startTime time.Time, format string) (version string, err error)
 }
 
 // createCmd (meant to be called via a CLI command) creates a new migration
-func createCmd(dir string, startTime time.Time, format string, name string, ext string, seq bool, seqDigits int, print bool) error {
+func createCmd(dir string, startTime time.Time, format string, name string, seq bool, seqDigits int, bidirectional bool, print bool) error {
 	if seq && format != defaultTimeFormat {
 		return errIncompatibleSeqAndFormat
 	}
@@ -81,7 +80,7 @@ func createCmd(dir string, startTime time.Time, format string, name string, ext 
 	var err error
 
 	dir = filepath.Clean(dir)
-	ext = "." + strings.TrimPrefix(ext, ".")
+	ext := ".sql"
 
 	if seq {
 		matches, err := filepath.Glob(filepath.Join(dir, "*"+ext))
@@ -118,8 +117,12 @@ func createCmd(dir string, startTime time.Time, format string, name string, ext 
 		return err
 	}
 
-	for _, direction := range []string{"up", "down"} {
-		basename := fmt.Sprintf("%s_%s.%s%s", version, name, direction, ext)
+	var directions = []string{}
+	if bidirectional {
+		directions = []string{".up", ".down"}
+	}
+	for _, direction := range directions {
+		basename := fmt.Sprintf("%s_%s%s%s", version, name, direction, ext)
 		filename := filepath.Join(dir, basename)
 
 		if err = createFile(filename); err != nil {

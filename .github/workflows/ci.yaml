@@ -1,18 +1,31 @@
-name: CI
+name: Check
 
 on:
   push:
+    branches: ["trunk"]
   pull_request:
+    branches: ["**"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  lint:
-    name: lint
+  conformance:
+    name: Conformance
+
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+        name: Checkout
+
+      - uses: crate-ci/typos@v1
+        name: Spellcheck
+
       - uses: actions/setup-go@v5
-        with:
-          go-version: "1.25.x"
+        name: Configure Go
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -33,79 +46,16 @@ jobs:
       - name: Run test
         run: make test COVERAGE_DIR=/tmp/coverage
 
-      - name: Send goveralls coverage
-        uses: shogo82148/actions-goveralls@v1
-        with:
-          path-to-profile: /tmp/coverage/combined.txt
-          flag-name: Go-${{ matrix.go }}
-          parallel: true
-
-  check-coverage:
-    name: Check coverage
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: shogo82148/actions-goveralls@v1
-        with:
-          parallel-finished: true
-
-  goreleaser:
-    name: Release a new version
+  release:
+    name: Release
     needs: [lint, test]
     runs-on: ubuntu-latest
-    environment: GoReleaser
-    # This job only runs when
-    # 1. When the previous `lint` and `test` jobs has completed successfully
-    # 2. When the repository is not a fork, i.e. it will only run on the official golang-migrate/migrate
-    # 3. When the workflow is triggered by a tag with `v` prefix
-    if: ${{ success() && github.repository == 'golang-migrate/migrate' && startsWith(github.ref, 'refs/tags/v') }}
+
+    if: ${{ success() && github.repository == 'aslilac/calliope-migrate' && startsWith(github.ref, 'refs/tags/v') }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.24.x"
 
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          username: golangmigrate
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - run: echo "SOURCE=$(make echo-source)" >> $GITHUB_ENV
-      - run: echo "DATABASE=$(make echo-database)" >> $GITHUB_ENV
-
-      - uses: goreleaser/goreleaser-action@v5
-        with:
-          version: latest
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - run: gem install package_cloud
-      - run: package_cloud push golang-migrate/migrate/ubuntu/bionic dist/migrate.linux-amd64.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-      - run: package_cloud push golang-migrate/migrate/ubuntu/focal dist/migrate.linux-amd64.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-      - run: package_cloud push golang-migrate/migrate/ubuntu/jammy dist/migrate.linux-amd64.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-      - run: package_cloud push golang-migrate/migrate/ubuntu/noble dist/migrate.linux-amd64.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-      - run: package_cloud push golang-migrate/migrate/debian/buster dist/migrate.linux-amd64.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-      - run: package_cloud push golang-migrate/migrate/debian/bullseye dist/migrate.linux-amd64.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-      - run: package_cloud push golang-migrate/migrate/debian/bookworm dist/migrate.linux-amd64.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+      - uses: softprops/action-gh-release@v1
+        name: Release

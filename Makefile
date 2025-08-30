@@ -8,6 +8,7 @@ COVERAGE_DIR ?= .coverage
 
 build:
 	CGO_ENABLED=0 go build -ldflags='-X main.Version=$(VERSION)' -tags '$(DATABASE) $(SOURCE)' ./cmd/migrate
+.PHONY: build
 
 build-docker:
 	CGO_ENABLED=0 go build -a -o build/migrate.linux-386 -ldflags="-s -w -X main.Version=${VERSION}" -tags "$(DATABASE) $(SOURCE)" ./cmd/migrate
@@ -27,16 +28,19 @@ build-cli: clean
 
 clean:
 	-rm -r ./cli/build
+.PHONY: clean
 
 
 test-short:
 	make test-with-flags --ignore-errors TEST_FLAGS='-short'
+.PHONY: test-short
 
 
 test:
 	@-rm -r $(COVERAGE_DIR)
 	@mkdir $(COVERAGE_DIR)
 	make test-with-flags TEST_FLAGS='-v -race -covermode atomic -coverprofile $$(COVERAGE_DIR)/combined.txt -bench=. -benchmem -timeout 20m'
+.PHONY: test
 
 
 test-with-flags:
@@ -111,10 +115,9 @@ define external_deps
 endef
 
 
-.PHONY: build build-docker build-cli clean test-short test test-with-flags html-coverage \
+.PHONY: build build-docker build-cli  test-with-flags html-coverage \
         restore-import-paths rewrite-import-paths list-external-deps release \
 		docs kill-docs open-docs kill-orphaned-docker-containers echo-source echo-database
 
 SHELL = /bin/sh
 RAND = $(shell echo $$RANDOM)
-

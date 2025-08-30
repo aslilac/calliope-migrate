@@ -5,8 +5,8 @@ package iofs_test
 import (
 	"testing"
 
-	"github.com/golang-migrate/migrate/v4/source/iofs"
-	st "github.com/golang-migrate/migrate/v4/source/testing"
+	"lilac.ooo/migrate/source/iofs"
+	st "lilac.ooo/migrate/source/testing"
 )
 
 func Test(t *testing.T) {

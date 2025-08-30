@@ -1,12 +1,13 @@
 package stub
 
 import (
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/source"
-	"github.com/golang-migrate/migrate/v4/source/stub"
 	"testing"
 
-	dt "github.com/golang-migrate/migrate/v4/database/testing"
+	"lilac.ooo/migrate"
+	"lilac.ooo/migrate/source"
+	"lilac.ooo/migrate/source/stub"
+
+	dt "lilac.ooo/migrate/database/testing"
 )
 
 func Test(t *testing.T) {

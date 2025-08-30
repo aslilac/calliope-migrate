@@ -1,6 +1,6 @@
 package postgres
 
-// error codes https://github.com/lib/pq/blob/master/error.go
+// error codes https://github.com/jackc/pgerrcode/blob/master/errcode.go
 
 import (
 	"context"
@@ -15,14 +15,12 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/golang-migrate/migrate/v4"
-
 	"github.com/dhui/dktest"
-
-	"github.com/golang-migrate/migrate/v4/database"
-	dt "github.com/golang-migrate/migrate/v4/database/testing"
-	"github.com/golang-migrate/migrate/v4/dktesting"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"lilac.ooo/migrate"
+	"lilac.ooo/migrate/database"
+	dt "lilac.ooo/migrate/database/testing"
+	"lilac.ooo/migrate/dktesting"
+	_ "lilac.ooo/migrate/source/file"
 )
 
 const (
@@ -54,7 +52,7 @@ func isReady(ctx context.Context, c dktest.ContainerInfo) bool {
 		return false
 	}
 
-	db, err := sql.Open("postgres", pgConnectionString(ip, port))
+	db, err := sql.Open("pgx", pgConnectionString(ip, port))
 	if err != nil {
 		return false
 	}
@@ -85,32 +83,6 @@ func mustRun(t *testing.T, d database.Driver, statements []string) {
 }
 
 func Test(t *testing.T) {
-	t.Run("test", test)
-	t.Run("testMigrate", testMigrate)
-	t.Run("testMultipleStatements", testMultipleStatements)
-	t.Run("testMultipleStatementsInMultiStatementMode", testMultipleStatementsInMultiStatementMode)
-	t.Run("testErrorParsing", testErrorParsing)
-	t.Run("testFilterCustomQuery", testFilterCustomQuery)
-	t.Run("testWithSchema", testWithSchema)
-	t.Run("testMigrationTableOption", testMigrationTableOption)
-	t.Run("testFailToCreateTableWithoutPermissions", testFailToCreateTableWithoutPermissions)
-	t.Run("testCheckBeforeCreateTable", testCheckBeforeCreateTable)
-	t.Run("testParallelSchema", testParallelSchema)
-	t.Run("testPostgresLock", testPostgresLock)
-	t.Run("testWithInstanceConcurrent", testWithInstanceConcurrent)
-	t.Run("testWithConnection", testWithConnection)
-
-	t.Cleanup(func() {
-		for _, spec := range specs {
-			t.Log("Cleaning up ", spec.ImageName)
-			if err := spec.Cleanup(); err != nil {
-				t.Error("Error removing ", spec.ImageName, "error:", err)
-			}
-		}
-	})
-}
-
-func test(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -132,7 +104,7 @@ func test(t *testing.T) {
 	})
 }
 
-func testMigrate(t *testing.T) {
+func TestMigrate(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -150,7 +122,7 @@ func testMigrate(t *testing.T) {
 				t.Error(err)
 			}
 		}()
-		m, err := migrate.NewWithDatabaseInstance("file://./examples/migrations", "postgres", d)
+		m, err := migrate.NewWithDatabaseInstance("file://../examples/migrations", "pgx", d)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -158,7 +130,7 @@ func testMigrate(t *testing.T) {
 	})
 }
 
-func testMultipleStatements(t *testing.T) {
+func TestMultipleStatements(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -191,7 +163,7 @@ func testMultipleStatements(t *testing.T) {
 	})
 }
 
-func testMultipleStatementsInMultiStatementMode(t *testing.T) {
+func TestMultipleStatementsInMultiStatementMode(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -224,7 +196,7 @@ func testMultipleStatementsInMultiStatementMode(t *testing.T) {
 	})
 }
 
-func testErrorParsing(t *testing.T) {
+func TestErrorParsing(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -244,7 +216,7 @@ func testErrorParsing(t *testing.T) {
 		}()
 
 		wantErr := `migration failed: syntax error at or near "TABLEE" (column 37) in line 1: CREATE TABLE foo ` +
-			`(foo text); CREATE TABLEE bar (bar text); (details: pq: syntax error at or near "TABLEE")`
+			`(foo text); CREATE TABLEE bar (bar text); (details: ERROR: syntax error at or near "TABLEE" (SQLSTATE 42601))`
 		if err := d.Run(strings.NewReader("CREATE TABLE foo (foo text); CREATE TABLEE bar (bar text);")); err == nil {
 			t.Fatal("expected err but got nil")
 		} else if err.Error() != wantErr {
@@ -253,15 +225,14 @@ func testErrorParsing(t *testing.T) {
 	})
 }
 
-func testFilterCustomQuery(t *testing.T) {
+func TestFilterCustomQuery(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		addr := fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-custom=foobar",
-			pgPassword, ip, port)
+		addr := pgConnectionString(ip, port, "x-custom=foobar")
 		p := &Postgres{}
 		d, err := p.Open(addr)
 		if err != nil {
@@ -275,7 +246,7 @@ func testFilterCustomQuery(t *testing.T) {
 	})
 }
 
-func testWithSchema(t *testing.T) {
+func TestWithSchema(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -303,8 +274,7 @@ func testWithSchema(t *testing.T) {
 		}
 
 		// re-connect using that schema
-		d2, err := p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&search_path=foobar",
-			pgPassword, ip, port))
+		d2, err := p.Open(pgConnectionString(ip, port, "search_path=foobar"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -345,7 +315,7 @@ func testWithSchema(t *testing.T) {
 	})
 }
 
-func testMigrationTableOption(t *testing.T) {
+func TestMigrationTableOption(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -367,53 +337,53 @@ func testMigrationTableOption(t *testing.T) {
 		}
 
 		// bad unquoted x-migrations-table parameter
-		wantErr := "x-migrations-table must be quoted (for instance '\"migrate\".\"schema_migrations\"') when x-migrations-table-quoted is enabled, current value is: migrate.schema_migrations"
-		d, err = p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=migrate.schema_migrations&x-migrations-table-quoted=1",
+		wantErr := "x-migrations-table must be quoted (for instance '\"migrate\".\"_calliope\"') when x-migrations-table-quoted is enabled, current value is: migrate._calliope"
+		d, err = p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=migrate._calliope&x-migrations-table-quoted=1",
 			pgPassword, ip, port))
 		if (err != nil) && (err.Error() != wantErr) {
 			t.Fatalf("expected '%s' but got '%s'", wantErr, err.Error())
 		}
 
 		// too many quoted x-migrations-table parameters
-		wantErr = "\"\"migrate\".\"schema_migrations\".\"toomany\"\" MigrationsTable contains too many dot characters"
-		d, err = p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=\"migrate\".\"schema_migrations\".\"toomany\"&x-migrations-table-quoted=1",
+		wantErr = "\"\"migrate\".\"_calliope\".\"toomany\"\" MigrationsTable contains too many dot characters"
+		d, err = p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=\"migrate\".\"_calliope\".\"toomany\"&x-migrations-table-quoted=1",
 			pgPassword, ip, port))
 		if (err != nil) && (err.Error() != wantErr) {
 			t.Fatalf("expected '%s' but got '%s'", wantErr, err.Error())
 		}
 
 		// good quoted x-migrations-table parameter
-		d, err = p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=\"migrate\".\"schema_migrations\"&x-migrations-table-quoted=1",
+		d, err = p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=\"migrate\".\"_calliope\"&x-migrations-table-quoted=1",
 			pgPassword, ip, port))
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		// make sure migrate.schema_migrations table exists
+		// make sure migrate._calliope table exists
 		var exists bool
-		if err := d.(*Postgres).conn.QueryRowContext(context.Background(), "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_migrations' AND table_schema = 'migrate')").Scan(&exists); err != nil {
+		if err := d.(*Postgres).conn.QueryRowContext(context.Background(), "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '_calliope' AND table_schema = 'migrate')").Scan(&exists); err != nil {
 			t.Fatal(err)
 		}
 		if !exists {
-			t.Fatalf("expected table migrate.schema_migrations to exist")
+			t.Fatalf("expected table migrate._calliope to exist")
 		}
 
-		d, err = p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=migrate.schema_migrations",
+		d, err = p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=migrate._calliope",
 			pgPassword, ip, port))
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := d.(*Postgres).conn.QueryRowContext(context.Background(), "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'migrate.schema_migrations' AND table_schema = (SELECT current_schema()))").Scan(&exists); err != nil {
+		if err := d.(*Postgres).conn.QueryRowContext(context.Background(), "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'migrate._calliope' AND table_schema = (SELECT current_schema()))").Scan(&exists); err != nil {
 			t.Fatal(err)
 		}
 		if !exists {
-			t.Fatalf("expected table 'migrate.schema_migrations' to exist")
+			t.Fatalf("expected table 'migrate._calliope' to exist")
 		}
 
 	})
 }
 
-func testFailToCreateTableWithoutPermissions(t *testing.T) {
+func TestFailToCreateTableWithoutPermissions(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -470,7 +440,7 @@ func testFailToCreateTableWithoutPermissions(t *testing.T) {
 		}
 
 		// re-connect using that x-migrations-table and x-migrations-table-quoted
-		d2, err = p.Open(fmt.Sprintf("postgres://not_owner:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=\"barfoo\".\"schema_migrations\"&x-migrations-table-quoted=1",
+		d2, err = p.Open(fmt.Sprintf("postgres://not_owner:%s@%v:%v/postgres?sslmode=disable&x-migrations-table=\"barfoo\".\"_calliope\"&x-migrations-table-quoted=1",
 			pgPassword, ip, port))
 
 		if !errors.As(err, &e) || err == nil {
@@ -483,7 +453,7 @@ func testFailToCreateTableWithoutPermissions(t *testing.T) {
 	})
 }
 
-func testCheckBeforeCreateTable(t *testing.T) {
+func TestCheckBeforeCreateTable(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -560,7 +530,7 @@ func testCheckBeforeCreateTable(t *testing.T) {
 	})
 }
 
-func testParallelSchema(t *testing.T) {
+func TestParallelSchema(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -588,8 +558,7 @@ func testParallelSchema(t *testing.T) {
 		}
 
 		// re-connect using that schemas
-		dfoo, err := p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&search_path=foo",
-			pgPassword, ip, port))
+		dfoo, err := p.Open(pgConnectionString(ip, port, "search_path=foo"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -599,8 +568,7 @@ func testParallelSchema(t *testing.T) {
 			}
 		}()
 
-		dbar, err := p.Open(fmt.Sprintf("postgres://postgres:%s@%v:%v/postgres?sslmode=disable&search_path=bar",
-			pgPassword, ip, port))
+		dbar, err := p.Open(pgConnectionString(ip, port, "search_path=bar"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -628,7 +596,7 @@ func testParallelSchema(t *testing.T) {
 	})
 }
 
-func testPostgresLock(t *testing.T) {
+func TestPostgres_Lock(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -668,7 +636,7 @@ func testPostgresLock(t *testing.T) {
 	})
 }
 
-func testWithInstanceConcurrent(t *testing.T) {
+func TestWithInstance_Concurrent(t *testing.T) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
 		ip, port, err := c.FirstPort()
 		if err != nil {
@@ -682,7 +650,7 @@ func testWithInstanceConcurrent(t *testing.T) {
 		// actually a connection pool, and so, each of the below go
 		// routines will have a high probability of using a separate
 		// connection, which is something we want to exercise.
-		db, err := sql.Open("postgres", pgConnectionString(ip, port))
+		db, err := sql.Open("pgx", pgConnectionString(ip, port))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -710,44 +678,6 @@ func testWithInstanceConcurrent(t *testing.T) {
 		}
 	})
 }
-
-func testWithConnection(t *testing.T) {
-	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
-		ip, port, err := c.FirstPort()
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		db, err := sql.Open("postgres", pgConnectionString(ip, port))
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer func() {
-			if err := db.Close(); err != nil {
-				t.Error(err)
-			}
-		}()
-
-		ctx := context.Background()
-		conn, err := db.Conn(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		p, err := WithConnection(ctx, conn, &Config{})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		defer func() {
-			if err := p.Close(); err != nil {
-				t.Error(err)
-			}
-		}()
-		dt.Test(t, p, []byte("SELECT 1"))
-	})
-}
-
 func Test_computeLineFromPos(t *testing.T) {
 	testcases := []struct {
 		pos      int

@@ -8,7 +8,7 @@ Refer to [upstream documentation](https://github.com/mattn/go-sqlite3/blob/maste
 
 | URL Query  | WithInstance Config | Description |
 |------------|---------------------|-------------|
-| `x-migrations-table` | `MigrationsTable` | Name of the migrations table.  Defaults to `schema_migrations`. |
+| `x-migrations-table` | `MigrationsTable` | Name of the migrations table.  Defaults to `_calliope`. |
 | `x-no-tx-wrap` | `NoTxWrap` | Disable implicit transactions when `true`.  Migrations may, and should, contain explicit `BEGIN` and `COMMIT` statements. |
 
 ## Notes

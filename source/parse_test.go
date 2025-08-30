@@ -11,23 +11,43 @@ func TestParse(t *testing.T) {
 		expectMigration *Migration
 	}{
 		{
-			name:      "1_foobar.up.sql",
+			name:      "1_wibble.up.sql",
 			expectErr: nil,
 			expectMigration: &Migration{
 				Version:    1,
-				Identifier: "foobar",
+				Identifier: "wibble",
 				Direction:  Up,
-				Raw:        "1_foobar.up.sql",
+				Raw:        "1_wibble.up.sql",
 			},
 		},
 		{
-			name:      "1_foobar.down.sql",
+			name:      "1-wibble.up.sql",
 			expectErr: nil,
 			expectMigration: &Migration{
 				Version:    1,
-				Identifier: "foobar",
+				Identifier: "wibble",
+				Direction:  Up,
+				Raw:        "1-wibble.up.sql",
+			},
+		},
+		{
+			name:      "1_wibble.sql",
+			expectErr: nil,
+			expectMigration: &Migration{
+				Version:    1,
+				Identifier: "wibble",
+				Direction:  Up,
+				Raw:        "1_wibble.sql",
+			},
+		},
+		{
+			name:      "1_wibble.down.sql",
+			expectErr: nil,
+			expectMigration: &Migration{
+				Version:    1,
+				Identifier: "wibble",
 				Direction:  Down,
-				Raw:        "1_foobar.down.sql",
+				Raw:        "1_wibble.down.sql",
 			},
 		},
 		{
@@ -72,11 +92,6 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:            "1.up.sql",
-			expectErr:       ErrParse,
-			expectMigration: nil,
-		},
-		{
-			name:            "1_foobar.sql",
 			expectErr:       ErrParse,
 			expectMigration: nil,
 		},

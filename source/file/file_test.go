@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	st "github.com/golang-migrate/migrate/v4/source/testing"
+	st "lilac.ooo/migrate/source/testing"
 )
 
 const scheme = "file://"
