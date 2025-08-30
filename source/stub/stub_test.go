@@ -3,8 +3,8 @@ package stub
 import (
 	"testing"
 
-	"lilac.ooo/migrate/source"
-	st "lilac.ooo/migrate/source/testing"
+	"lilac.ooo/calliope/source"
+	st "lilac.ooo/calliope/source/testing"
 )
 
 func Test(t *testing.T) {

@@ -1,3 +1,3 @@
 # iofs
 
-https://pkg.go.dev/lilac.ooo/migrate/source/iofs
+https://pkg.go.dev/lilac.ooo/calliope/source/iofs

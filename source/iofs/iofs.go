@@ -8,7 +8,7 @@ import (
 	"path"
 	"strconv"
 
-	"lilac.ooo/migrate/source"
+	"lilac.ooo/calliope/source"
 )
 
 type driver struct {

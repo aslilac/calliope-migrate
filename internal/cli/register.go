@@ -1,6 +1,6 @@
 package cli
 
 import (
-	_ "lilac.ooo/migrate/database/postgres"
-	_ "lilac.ooo/migrate/database/sqlite3"
+	_ "lilac.ooo/calliope/database/postgres"
+	_ "lilac.ooo/calliope/database/sqlite3"
 )

@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
+	"lilac.ooo/calliope/database"
+	"lilac.ooo/calliope/source"
 	"lilac.ooo/migrate"
-	"lilac.ooo/migrate/database"
-	"lilac.ooo/migrate/source"
 )
 
 const (

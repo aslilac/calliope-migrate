@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	dStub "lilac.ooo/migrate/database/stub"
-	"lilac.ooo/migrate/source"
-	sStub "lilac.ooo/migrate/source/stub"
+	dStub "lilac.ooo/calliope/database/stub"
+	"lilac.ooo/calliope/source"
+	sStub "lilac.ooo/calliope/source/stub"
 )
 
 // sourceStubMigrations hold the following migrations:
@@ -116,7 +116,7 @@ func ExampleNewWithDatabaseInstance() {
 
 	// Create driver instance from db.
 	// Check each driver if it supports the WithInstance function.
-	// `import "lilac.ooo/migrate/database/postgres"`
+	// `import "lilac.ooo/calliope/database/postgres"`
 	instance, err := dStub.WithInstance(db, &dStub.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -166,7 +166,7 @@ func ExampleNewWithSourceInstance() {
 
 	// Create driver instance from DummyInstance di.
 	// Check each driver if it support the WithInstance function.
-	// `import "lilac.ooo/migrate/source/stub"`
+	// `import "lilac.ooo/calliope/source/stub"`
 	instance, err := sStub.WithInstance(di, &sStub.Config{})
 	if err != nil {
 		log.Fatal(err)

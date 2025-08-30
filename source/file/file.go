@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"lilac.ooo/migrate/source"
-	"lilac.ooo/migrate/source/iofs"
+	"lilac.ooo/calliope/source"
+	"lilac.ooo/calliope/source/iofs"
 )
 
 func init() {

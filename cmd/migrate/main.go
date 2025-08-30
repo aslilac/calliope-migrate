@@ -1,6 +1,6 @@
 package main
 
-import "lilac.ooo/migrate/internal/cli"
+import "lilac.ooo/calliope/internal/cli"
 
 func main() {
 	cli.Main(Version)

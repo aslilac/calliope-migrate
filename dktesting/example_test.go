@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dhui/dktest"
-	"lilac.ooo/migrate/dktesting"
+	"lilac.ooo/calliope/dktesting"
 )
 
 func ExampleParallelTest() {

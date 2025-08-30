@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"lilac.ooo/migrate/database"
+	"lilac.ooo/calliope/database"
 )
 
 // Test runs tests against database implementations.

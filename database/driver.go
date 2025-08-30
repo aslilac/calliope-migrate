@@ -9,7 +9,7 @@ import (
 	"io"
 	"sync"
 
-	iurl "lilac.ooo/migrate/internal/url"
+	iurl "lilac.ooo/calliope/internal/url"
 )
 
 var (

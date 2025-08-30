@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
+	_ "lilac.ooo/calliope/source/file"
 	"lilac.ooo/migrate"
-	_ "lilac.ooo/migrate/source/file"
 )
 
 var (

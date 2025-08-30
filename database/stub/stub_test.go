@@ -3,11 +3,11 @@ package stub
 import (
 	"testing"
 
+	"lilac.ooo/calliope/source"
+	"lilac.ooo/calliope/source/stub"
 	"lilac.ooo/migrate"
-	"lilac.ooo/migrate/source"
-	"lilac.ooo/migrate/source/stub"
 
-	dt "lilac.ooo/migrate/database/testing"
+	dt "lilac.ooo/calliope/database/testing"
 )
 
 func Test(t *testing.T) {

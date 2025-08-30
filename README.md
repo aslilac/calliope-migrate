@@ -1,4 +1,4 @@
-[![Documentation](https://pkg.go.dev/badge/lilac.ooo/migrate)](https://pkg.go.dev/lilac.ooo/migrate)
+[![Documentation](https://pkg.go.dev/badge/lilac.ooo/calliope)](https://pkg.go.dev/lilac.ooo/calliope)
 
 # Calliope
 
@@ -45,12 +45,12 @@ $ migrate -path migrations/ -database postgres:///database up
 * Uses `io.Reader` streams internally for low memory overhead.
 * Thread-safe and no goroutine leaks.
 
-__[Go Documentation](https://pkg.go.dev/lilac.ooo/migrate)__
+__[Go Documentation](https://pkg.go.dev/lilac.ooo/calliope)__
 
 ```go
 import (
-    "lilac.ooo/migrate"
-    _ "lilac.ooo/migrate/database/postgres"
+    "lilac.ooo/calliope"
+    _ "lilac.ooo/calliope/database/postgres"
 )
 
 func main() {
@@ -67,9 +67,9 @@ Want to use an existing database client?
 import (
     "database/sql"
     _ "github.com/lib/pq"
-    "lilac.ooo/migrate"
-    "lilac.ooo/migrate/database/postgres"
-    _ "lilac.ooo/migrate/source/file"
+    "lilac.ooo/calliope"
+    "lilac.ooo/calliope/database/postgres"
+    _ "lilac.ooo/calliope/source/file"
 )
 
 func main() {

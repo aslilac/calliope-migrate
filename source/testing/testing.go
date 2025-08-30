@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"lilac.ooo/migrate/source"
+	"lilac.ooo/calliope/source"
 )
 
 // Test runs tests against source implementations.

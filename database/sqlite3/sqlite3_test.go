@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	_ "github.com/mattn/go-sqlite3"
+	dt "lilac.ooo/calliope/database/testing"
+	_ "lilac.ooo/calliope/source/file"
 	"lilac.ooo/migrate"
-	dt "lilac.ooo/migrate/database/testing"
-	_ "lilac.ooo/migrate/source/file"
 )
 
 func Test(t *testing.T) {

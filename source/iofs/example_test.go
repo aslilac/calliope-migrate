@@ -4,9 +4,9 @@ import (
 	"embed"
 	"log"
 
+	_ "lilac.ooo/calliope/database/postgres"
+	"lilac.ooo/calliope/source/iofs"
 	"lilac.ooo/migrate"
-	_ "lilac.ooo/migrate/database/postgres"
-	"lilac.ooo/migrate/source/iofs"
 )
 
 //go:embed testdata/migrations/*.sql

@@ -16,9 +16,9 @@ import (
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"lilac.ooo/calliope/database"
+	"lilac.ooo/calliope/internal/multistmt"
 	"lilac.ooo/migrate"
-	"lilac.ooo/migrate/database"
-	"lilac.ooo/migrate/internal/multistmt"
 )
 
 func init() {

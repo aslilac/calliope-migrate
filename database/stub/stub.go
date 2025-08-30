@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"sync/atomic"
 
-	"lilac.ooo/migrate/database"
+	"lilac.ooo/calliope/database"
 )
 
 func init() {

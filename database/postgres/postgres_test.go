@@ -16,11 +16,11 @@ import (
 	"testing"
 
 	"github.com/dhui/dktest"
+	"lilac.ooo/calliope/database"
+	dt "lilac.ooo/calliope/database/testing"
+	"lilac.ooo/calliope/dktesting"
+	_ "lilac.ooo/calliope/source/file"
 	"lilac.ooo/migrate"
-	"lilac.ooo/migrate/database"
-	dt "lilac.ooo/migrate/database/testing"
-	"lilac.ooo/migrate/dktesting"
-	_ "lilac.ooo/migrate/source/file"
 )
 
 const (

@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-$ go install lilac.ooo/migrate/cmd/migrate@v1
+$ go install lilac.ooo/calliope/cmd/migrate@v1
 ```
 
 ## Usage

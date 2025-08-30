@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"lilac.ooo/migrate/internal/multistmt"
+	"lilac.ooo/calliope/internal/multistmt"
 )
 
 const maxMigrationSize = 1024

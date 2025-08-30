@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"lilac.ooo/migrate/source"
+	"lilac.ooo/calliope/source"
 )
 
 func init() {

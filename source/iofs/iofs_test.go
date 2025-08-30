@@ -3,8 +3,8 @@ package iofs_test
 import (
 	"testing"
 
-	"lilac.ooo/migrate/source/iofs"
-	st "lilac.ooo/migrate/source/testing"
+	"lilac.ooo/calliope/source/iofs"
+	st "lilac.ooo/calliope/source/testing"
 )
 
 func Test(t *testing.T) {

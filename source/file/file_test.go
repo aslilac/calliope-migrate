@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	st "lilac.ooo/migrate/source/testing"
+	st "lilac.ooo/calliope/source/testing"
 )
 
 const scheme = "file://"

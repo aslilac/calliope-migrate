@@ -1,4 +1,4 @@
-module lilac.ooo/migrate
+module lilac.ooo/calliope
 
 go 1.25
 

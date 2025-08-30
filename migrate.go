@@ -13,9 +13,9 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 
-	"lilac.ooo/migrate/database"
-	iurl "lilac.ooo/migrate/internal/url"
-	"lilac.ooo/migrate/source"
+	"lilac.ooo/calliope/database"
+	iurl "lilac.ooo/calliope/internal/url"
+	"lilac.ooo/calliope/source"
 )
 
 // DefaultPrefetchMigrations sets the number of migrations to pre-read

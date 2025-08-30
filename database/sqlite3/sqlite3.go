@@ -11,8 +11,8 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	_ "github.com/mattn/go-sqlite3"
+	"lilac.ooo/calliope/database"
 	"lilac.ooo/migrate"
-	"lilac.ooo/migrate/database"
 )
 
 func init() {
