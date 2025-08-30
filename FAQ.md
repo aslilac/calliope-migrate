@@ -4,38 +4,30 @@
 <summary>What's the difference between Next/Previous and Up/Down?</summary>
 
 ```
-1_first_migration.up.sql           next ->  2_second_migration.up.sql      ...
-1_first_migration.down.sql  <- previous     2_second_migration.down.sql    ...
+1-first-migration.up.sql           next ->  2-second-migration.up.sql
+1-first-migration.down.sql  <- previous     2-second-migration.down.sql
 ```
+
 </details>
 
-## Why two separate files (up and down) for a migration?
-
-It makes all of our lives easier. No new markup/syntax to learn for users and existing database utility tools continue to work as expected.
-
-## How many migrations can migrate handle?
-
+<details>
+<summary>How many migrations can migrate handle?</summary>
 Way more than you can write.
+</details>
 
-## Are the table tests in migrate_test.go bloated?
-
-Yes and no. There are duplicate test cases for sure but they don't hurt here. In fact the tests are very visual now and might help new users understand expected behaviors quickly. Migrate from version x to y and y is the last migration? Just check out the test for that particular case and know what's going on instantly.
-
-## What is Docker being used for?
-
-Only for testing. See [testing/docker.go](testing/docker.go)
-
-## Why not just use docker-compose?
-
-It doesn't give us enough runtime control for testing. We want to be able to bring up containers fast and whenever we want, not just once at the beginning of all tests.
-
-## What does "dirty" database mean?
-
+<details>
+<summary>What does "dirty" database mean?</summary>
 Before a migration runs, each database sets a dirty flag. Execution stops if a migration fails and the dirty state persists, which prevents attempts to run more migrations on top of a failed migration. You need to manually fix the error and then "force" the expected version.
+</details>
 
-## Do I need to create a table for tracking migration version used?
 
+<details>
+<summary>Do I need to create a table for tracking migration version used?</summary>
 No, it is done automatically.
+</details>
 
-## I have got an error `Dirty database version 1. Fix and force version`. What should I do?
+
+<details>
+<summary>I'm getting a "Dirty database version" error. What should I do?</summary>
 Keep calm and refer to [the getting started docs](GETTING_STARTED.md#forcing-your-database-version).
+</details>
