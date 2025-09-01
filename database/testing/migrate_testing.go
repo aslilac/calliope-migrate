@@ -6,7 +6,7 @@ package testing
 import (
 	"testing"
 
-	"lilac.ooo/migrate"
+	migrate "lilac.ooo/calliope"
 )
 
 // TestMigrate runs integration-tests between the Migrate layer and database implementations.

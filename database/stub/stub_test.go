@@ -3,9 +3,9 @@ package stub
 import (
 	"testing"
 
+	migrate "lilac.ooo/calliope"
 	"lilac.ooo/calliope/source"
 	"lilac.ooo/calliope/source/stub"
-	"lilac.ooo/migrate"
 
 	dt "lilac.ooo/calliope/database/testing"
 )
