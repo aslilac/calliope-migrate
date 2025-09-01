@@ -117,7 +117,7 @@ func createCmd(dir string, startTime time.Time, format string, name string, seq 
 		return err
 	}
 
-	var directions = []string{}
+	var directions = []string{""}
 	if bidirectional {
 		directions = []string{".up", ".down"}
 	}
